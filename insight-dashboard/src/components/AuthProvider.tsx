@@ -1,9 +1,15 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { auth, googleProvider } from '../lib/firebase';
-import { signInWithPopup, signOut, onAuthStateChanged, User } from 'firebase/auth';
+import React, { createContext, useContext, useState } from 'react';
+
+// Dummy user object that mimics Firebase User shape
+const DUMMY_USER = {
+  uid: 'demo-user-001',
+  displayName: 'Demo Admin',
+  email: 'admin@devops-demo.com',
+  photoURL: null,
+};
 
 interface AuthContextType {
-  user: User | null;
+  user: typeof DUMMY_USER | null;
   loading: boolean;
   loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
@@ -12,34 +18,17 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
-    return unsubscribe;
-  }, []);
+  const [user, setUser] = useState<typeof DUMMY_USER | null>(null);
+  const [loading] = useState(false);
 
   const loginWithGoogle = async () => {
-    try {
-      await signInWithPopup(auth, googleProvider);
-    } catch (error) {
-      console.error("Google Auth Error:", error);
-    }
+    // Simulate a short login delay
+    await new Promise(res => setTimeout(res, 500));
+    setUser(DUMMY_USER);
   };
 
   const logout = async () => {
-    try {
-      await signOut(auth);
-      // Invalidate on the backend as well
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
-      await fetch(`${baseUrl}/auth/logout`, { method: 'POST' }).catch(() => {});
-    } catch (error) {
-      console.error("Logout Error:", error);
-    }
+    setUser(null);
   };
 
   return (
