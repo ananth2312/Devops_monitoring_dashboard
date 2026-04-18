@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 
-// Dummy user object that mimics Firebase User shape
+// Dummy user object — no external auth dependency
 const DUMMY_USER = {
   uid: 'demo-user-001',
   displayName: 'Demo Admin',
