@@ -13,18 +13,17 @@ router.get('/', async (req, res) => {
    }
 });
 
+// POST: Save server to local DB only
+// AWS instances are pulled automatically via the sync poller
 router.post('/', async (req, res) => {
    const server = req.body;
 
-   // Validation
-   if (!server.serverName || !server.ipAddress) {
-       return res.status(400).json({ message: "Server Name and IP Address are required." });
+   if (!server.serverName) {
+       return res.status(400).json({ message: "Server Name is required." });
    }
-   
-   const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-   if (!ipRegex.test(server.ipAddress)) {
-       return res.status(400).json({ message: "Invalid IP Address format." });
-   }
+
+   // Provide a default IP if not supplied
+   if (!server.ipAddress) server.ipAddress = "0.0.0.0";
 
    const newServer = new Server(server);
    try {

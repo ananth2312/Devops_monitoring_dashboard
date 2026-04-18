@@ -121,6 +121,39 @@ export const ServerModal = ({ isOpen, onClose, serverToEdit }: ServerModalProps)
               </Select>
             </div>
           </div>
+          
+          <div className="pt-2 border-t border-border/50">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">AWS Configuration</h4>
+              <span className="text-[10px] text-muted-foreground bg-accent/60 px-2 py-0.5 rounded-full">Leave blank for smart defaults</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="instanceType" className="text-xs">Instance Type</Label>
+                <select
+                  id="instanceType"
+                  name="instanceType"
+                  value={(formData as any).instanceType || "t2.micro"}
+                  onChange={(e) => setFormData(prev => ({ ...prev, instanceType: e.target.value } as any))}
+                  className="w-full bg-accent/50 border border-border text-xs rounded-md px-2 py-1.5 outline-none text-foreground font-mono h-8"
+                >
+                  <option value="t2.micro">t2.micro (Free Tier ✓)</option>
+                  <option value="t2.small">t2.small</option>
+                  <option value="t2.medium">t2.medium</option>
+                  <option value="t3.small">t3.small</option>
+                  <option value="t3.medium">t3.medium</option>
+                </select>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="amiId" className="text-xs">AMI ID <span className="text-muted-foreground">(optional)</span></Label>
+                <Input id="amiId" name="amiId" value={(formData as any).amiId || ""} onChange={handleChange} placeholder="Auto: Amazon Linux 2" className="h-8 text-xs" />
+              </div>
+              <div className="space-y-1.5 col-span-2">
+                <Label htmlFor="subnetId" className="text-xs">Subnet ID <span className="text-muted-foreground">(auto-detected)</span></Label>
+                <Input id="subnetId" name="subnetId" value={(formData as any).subnetId || ""} onChange={handleChange} placeholder="Auto-detected from your VPC" className="h-8 text-xs" />
+              </div>
+            </div>
+          </div>
           <div className="space-y-2">
             <Label htmlFor="location">Location</Label>
             <Select value={formData.location} onValueChange={(val) => setFormData(prev => ({ ...prev, location: val }))}>

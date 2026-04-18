@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import ServerDetail from "@/components/widgets/ServerDetail";
 import { Server } from "@/lib/mockData";
-import { Search, Filter, Plus, Edit, Trash2 } from "lucide-react";
+import { Search, Filter, Plus, Edit, Trash2, Cloud } from "lucide-react";
 import { useServers } from "@/hooks/useServers";
 import { ServerModal } from "@/components/widgets/ServerModal";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ const statusStyle: Record<string, string> = {
 };
 
 const Inventory = () => {
-  const { servers, deleteServer } = useServers();
+  const { servers, deleteServer, syncAWS, isSyncingAWS } = useServers();
   const { user } = useAuth();
   
   const [selectedServer, setSelectedServer] = useState<Server | null>(null);
@@ -80,9 +80,27 @@ const Inventory = () => {
             <div className="flex items-center gap-4">
                 <div className="text-xs text-muted-foreground font-mono">Total Assets: {filteredServers.length}</div>
                 {user && (
-                  <Button size="sm" onClick={() => { setServerToEdit(null); setIsModalOpen(true); }}>
-                    <Plus className="w-4 h-4 mr-2" /> Add Server
-                  </Button>
+                  <>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={async () => {
+                        try {
+                          await syncAWS();
+                          alert("Successfully synced with AWS");
+                        } catch (err: any) {
+                          alert(`Sync failed: ${err.message}`);
+                        }
+                      }}
+                      disabled={isSyncingAWS}
+                    >
+                      <Cloud className="w-4 h-4 mr-2" />
+                      {isSyncingAWS ? "Syncing..." : "Sync AWS"}
+                    </Button>
+                    <Button size="sm" onClick={() => { setServerToEdit(null); setIsModalOpen(true); }}>
+                      <Plus className="w-4 h-4 mr-2" /> Add Server
+                    </Button>
+                  </>
                 )}
             </div>
           </div>

@@ -31,6 +31,9 @@ const mapToBackend = (server: Partial<Server>) => ({
   uptime: server.uptime,
   location: server.location,
   environment: server.environment,
+  amiId: (server as any).amiId,
+  instanceType: (server as any).instanceType,
+  subnetId: (server as any).subnetId,
 });
 
 export const useServers = () => {
@@ -44,6 +47,7 @@ export const useServers = () => {
       const data = await response.json();
       return data.map(mapToFrontend);
     },
+    refetchInterval: 30000, // Auto-refresh every 30s to pick up AWS sync
   });
 
   const { mutateAsync: addServer } = useMutation({
@@ -95,6 +99,20 @@ export const useServers = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["servers"] }),
   });
 
+  const { mutateAsync: syncAWS, isPending: isSyncingAWS } = useMutation({
+    mutationFn: async () => {
+      const response = await fetch("http://localhost:5000/api/aws/sync/servers", {
+        method: "GET",
+      });
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.message || "Failed to sync with AWS");
+      }
+      return response.json();
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["servers"] }),
+  });
+
   return {
     servers,
     isLoading,
@@ -102,5 +120,7 @@ export const useServers = () => {
     addServer,
     updateServer,
     deleteServer,
+    syncAWS,
+    isSyncingAWS,
   };
 };
