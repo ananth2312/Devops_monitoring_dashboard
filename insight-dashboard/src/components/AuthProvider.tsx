@@ -35,7 +35,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       await signOut(auth);
       // Invalidate on the backend as well
-      await fetch('http://localhost:5000/api/auth/logout', { method: 'POST' }).catch(() => {});
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+      await fetch(`${baseUrl}/auth/logout`, { method: 'POST' }).catch(() => {});
     } catch (error) {
       console.error("Logout Error:", error);
     }

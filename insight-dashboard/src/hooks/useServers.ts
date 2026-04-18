@@ -1,7 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Server } from "@/lib/mockData";
 
-const API_URL = "http://localhost:5000/api/servers";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+const API_URL = `${BASE_URL}/servers`;
 
 // Helper to map backend format to frontend format
 const mapToFrontend = (server: Record<string, any>): Server => ({
@@ -101,7 +102,7 @@ export const useServers = () => {
 
   const { mutateAsync: syncAWS, isPending: isSyncingAWS } = useMutation({
     mutationFn: async () => {
-      const response = await fetch("http://localhost:5000/api/aws/sync/servers", {
+      const response = await fetch(`${BASE_URL}/aws/sync/servers`, {
         method: "GET",
       });
       if (!response.ok) {
