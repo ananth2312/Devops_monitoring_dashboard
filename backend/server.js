@@ -54,7 +54,12 @@ const startAwsPoller = () => {
     console.log(`✅ AWS EC2 auto-sync started (every ${AWS_SYNC_INTERVAL_MS / 1000}s).`);
 };
 
-mongoose.connect(MONGODB_URI)
+mongoose.connect(MONGODB_URI, {
+  tls: true,
+  tlsAllowInvalidCertificates: false,
+  serverSelectionTimeoutMS: 10000,
+  socketTimeoutMS: 45000,
+})
   .then(() => {
     console.log('Connected to MongoDB Compass successfully');
     generateMetrics();
