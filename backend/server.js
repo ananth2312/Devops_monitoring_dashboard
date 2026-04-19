@@ -22,6 +22,7 @@ const PORT = process.env.PORT || 5000;
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
+  'http://localhost:8080',
   'https://devops-monitoring-dashboard.vercel.app',
 ];
 app.use(cors({

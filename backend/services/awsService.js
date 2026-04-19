@@ -52,7 +52,7 @@ export const syncEC2Instances = async () => {
             const updated = await Server.findOneAndUpdate(
                 { serverName: inst.serverName },
                 { $set: inst },
-                { new: true, upsert: true }
+                { returnDocument: 'after', upsert: true }
             );
             updatedServers.push(updated);
         }
